@@ -153,6 +153,7 @@ cython_debug/
 *.ckpt
 *.h5
 *.pb
+badas/weights
 
 # Dataset files
 data/

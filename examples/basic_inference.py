@@ -51,6 +51,15 @@ def main():
         sys.exit(1)
     
     print(f"Loading BADAS model...")
+    
+    # Use local weights if no checkpoint specified
+    if args.checkpoint is None:
+        # Try local weights first
+        local_weights = Path(__file__).parent.parent / "badas" / "weights" / "badas_open.pth"
+        if local_weights.exists():
+            args.checkpoint = str(local_weights)
+            print(f"Using local weights: {args.checkpoint}")
+    
     model = BADASModel(
         device=args.device,
         confidence_threshold=args.threshold,
@@ -99,11 +108,20 @@ def main():
         print("✅ No high collision risk detected in this video")
     
     # Additional statistics
-    avg_risk = sum(predictions) / len(predictions)
-    max_risk = max(predictions)
-    print(f"\nStatistics:")
-    print(f"  Average risk: {avg_risk:.2%}")
-    print(f"  Maximum risk: {max_risk:.2%}")
+    import numpy as np
+    # Filter out NaN values from predictions
+    valid_predictions = [p for p in predictions if not np.isnan(p)]
+    
+    if valid_predictions:
+        avg_risk = sum(valid_predictions) / len(valid_predictions)
+        max_risk = max(valid_predictions)
+        print(f"\nStatistics:")
+        print(f"  Average risk: {avg_risk:.2%}")
+        print(f"  Maximum risk: {max_risk:.2%}")
+        print(f"  Valid predictions: {len(valid_predictions)}/{len(predictions)}")
+    else:
+        print(f"\nStatistics:")
+        print(f"  Warning: All predictions are NaN")
 
 
 if __name__ == "__main__":

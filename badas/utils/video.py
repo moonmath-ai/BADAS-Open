@@ -14,10 +14,14 @@ import re
 
 # Import training components - reuse existing logic
 try:
-    from train.video_training import detect_model_type, EnhancedVideoClassifier
+    from badas.train.video_training import detect_model_type, EnhancedVideoClassifier
     HAS_TRAINING_MODULES = True
 except ImportError:
-    HAS_TRAINING_MODULES = False
+    try:
+        from train.video_training import detect_model_type, EnhancedVideoClassifier
+        HAS_TRAINING_MODULES = True
+    except ImportError:
+        HAS_TRAINING_MODULES = False
 
 # Try to import processors
 try:
@@ -340,7 +344,10 @@ def preprocess_video_frames(video_path: str, target_frames: int = 32,
         if processor:
             try:
                 # Import here to avoid circular imports
-                from train.video_training import detect_model_type
+                try:
+                    from badas.train.video_training import detect_model_type
+                except ImportError:
+                    from train.video_training import detect_model_type
                 if model_name:
                     model_info = detect_model_type(model_name)
                     if model_info.get('is_vjepa2'):

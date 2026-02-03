@@ -27,13 +27,19 @@ def load_badas_model(device: Optional[str] = None,
     # Import from package structure
     from .models.vjepa import VJEPAModel
     
-    # Handle checkpoint path
-    if checkpoint_path is None and download_weights:
-        print("Downloading BADAS model weights...")
-        checkpoint_path = hf_hub_download(
-            repo_id="nexar-ai/badas-open",
-            filename="weights/badas_open.pth"
-        )
+    # Handle checkpoint path - try local first
+    if checkpoint_path is None:
+        # Check for local weights
+        local_weights = Path(__file__).parent / "weights" / "badas_open.pth"
+        if local_weights.exists():
+            checkpoint_path = str(local_weights)
+            print(f"Using local weights: {checkpoint_path}")
+        elif download_weights:
+            print("Downloading BADAS model weights from HuggingFace...")
+            checkpoint_path = hf_hub_download(
+                repo_id="nexar-ai/badas-open",
+                filename="weights/badas_open.pth"
+            )
     
     model = VJEPAModel(
         model_name="facebook/vjepa2-vitl-fpc16-256-ssv2",
@@ -80,12 +86,10 @@ class BADASModel:
         Returns:
             List of collision probabilities for each frame window
         """
-        frames = preprocess_video(video_path, target_fps=8, num_frames=16)
+        # Pass video path directly to model for sliding window prediction
+        predictions = self.model.predict(video_path)
         
-        with torch.no_grad():
-            predictions = self.model.predict(frames)
-        
-        return predictions
+        return predictions.tolist() if hasattr(predictions, 'tolist') else list(predictions)
     
     def estimate_time_to_accident(self, collision_probs: List[float], 
                                  fps: float = 8.0) -> Optional[float]:
