@@ -190,3 +190,9 @@ secrets.json
 # OS specific
 Thumbs.db
 desktop.ini
+
+#profiles
+examples/inference_trace.json
+examples/nsight_profiles/*.nsys-rep
+examples/nsight_profiles/*.ncu-rep
+examples/nsight_profiles/*.sqlite

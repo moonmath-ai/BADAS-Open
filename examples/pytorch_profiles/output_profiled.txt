@@ -1,0 +1,106 @@
+/home/karthik/BADAS-Open/badas/utils/video.py:55: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  checkpoint = torch.load(model_path, map_location='cpu')
+/home/karthik/BADAS-Open/badas/utils/video.py:182: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  checkpoint = torch.load(checkpoint_path, map_location=device)
+Loading BADAS model...
+Using local weights: /home/karthik/BADAS-Open/badas/weights/badas_open.pth
+Loading V-JEPA model: facebook/vjepa2-vitl-fpc16-256-ssv2
+Using checkpoint: /home/karthik/BADAS-Open/badas/weights/badas_open.pth
+
+Loading weights: 100%|██████████| 587/587 [00:00<00:00, 5538.37it/s, Materializing param=predictor.proj.weight]
+VJEPA2Model LOAD REPORT from: facebook/vjepa2-vitl-fpc16-256-ssv2
+Key                                                              | Status     |  | 
+-----------------------------------------------------------------+------------+--+-
+pooler.self_attention_layers.{0, 1, 2}.self_attn.q_proj.bias     | UNEXPECTED |  | 
+pooler.self_attention_layers.{0, 1, 2}.layer_norm2.bias          | UNEXPECTED |  | 
+pooler.cross_attention_layer.layer_norm1.bias                    | UNEXPECTED |  | 
+pooler.self_attention_layers.{0, 1, 2}.self_attn.out_proj.weight | UNEXPECTED |  | 
+pooler.cross_attention_layer.mlp.fc2.bias                        | UNEXPECTED |  | 
+pooler.cross_attention_layer.cross_attn.q_proj.weight            | UNEXPECTED |  | 
+pooler.cross_attention_layer.mlp.fc2.weight                      | UNEXPECTED |  | 
+pooler.self_attention_layers.{0, 1, 2}.mlp.fc2.weight            | UNEXPECTED |  | 
+pooler.self_attention_layers.{0, 1, 2}.self_attn.k_proj.bias     | UNEXPECTED |  | 
+pooler.self_attention_layers.{0, 1, 2}.self_attn.v_proj.bias     | UNEXPECTED |  | 
+pooler.self_attention_layers.{0, 1, 2}.self_attn.v_proj.weight   | UNEXPECTED |  | 
+pooler.self_attention_layers.{0, 1, 2}.mlp.fc1.bias              | UNEXPECTED |  | 
+pooler.cross_attention_layer.layer_norm2.weight                  | UNEXPECTED |  | 
+pooler.self_attention_layers.{0, 1, 2}.mlp.fc2.bias              | UNEXPECTED |  | 
+pooler.self_attention_layers.{0, 1, 2}.self_attn.out_proj.bias   | UNEXPECTED |  | 
+pooler.self_attention_layers.{0, 1, 2}.layer_norm1.weight        | UNEXPECTED |  | 
+pooler.self_attention_layers.{0, 1, 2}.mlp.fc1.weight            | UNEXPECTED |  | 
+pooler.self_attention_layers.{0, 1, 2}.self_attn.q_proj.weight   | UNEXPECTED |  | 
+pooler.self_attention_layers.{0, 1, 2}.layer_norm2.weight        | UNEXPECTED |  | 
+pooler.cross_attention_layer.cross_attn.v_proj.bias              | UNEXPECTED |  | 
+pooler.self_attention_layers.{0, 1, 2}.self_attn.k_proj.weight   | UNEXPECTED |  | 
+pooler.cross_attention_layer.cross_attn.q_proj.bias              | UNEXPECTED |  | 
+pooler.cross_attention_layer.cross_attn.k_proj.bias              | UNEXPECTED |  | 
+pooler.cross_attention_layer.mlp.fc1.bias                        | UNEXPECTED |  | 
+pooler.cross_attention_layer.cross_attn.v_proj.weight            | UNEXPECTED |  | 
+pooler.cross_attention_layer.layer_norm2.bias                    | UNEXPECTED |  | 
+pooler.cross_attention_layer.layer_norm1.weight                  | UNEXPECTED |  | 
+classifier.weight                                                | UNEXPECTED |  | 
+pooler.query_tokens                                              | UNEXPECTED |  | 
+classifier.bias                                                  | UNEXPECTED |  | 
+pooler.self_attention_layers.{0, 1, 2}.layer_norm1.bias          | UNEXPECTED |  | 
+pooler.cross_attention_layer.cross_attn.k_proj.weight            | UNEXPECTED |  | 
+pooler.cross_attention_layer.mlp.fc1.weight                      | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED	:can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+Loaded encoder with custom head
+Found predictor: VJEPA2Predictor
+Using AutoVideoProcessor for V-JEPA 2
+🎬 Sliding window predictor initialized (window=16, stride=1)
+Processing video: /data/karthik_data/badas_data/test-private/positive/00001.mp4
+Threshold: 0.8
+--------------------------------------------------
+
+Results:
+Total predictions: 81
+⚡ Medium risk at 7.5s: 53.41%
+⚡ Medium risk at 7.6s: 58.27%
+⚡ Medium risk at 7.8s: 68.94%
+⚡ Medium risk at 7.9s: 65.94%
+⚠️  High collision risk at 8.0s: 89.43%
+⚠️  High collision risk at 8.1s: 94.97%
+⚠️  High collision risk at 8.2s: 89.03%
+⚠️  High collision risk at 8.4s: 95.10%
+⚠️  High collision risk at 8.5s: 86.86%
+⚠️  High collision risk at 8.6s: 98.37%
+⚠️  High collision risk at 8.8s: 99.17%
+⚠️  High collision risk at 8.9s: 95.03%
+⚠️  High collision risk at 9.0s: 99.19%
+⚠️  High collision risk at 9.1s: 98.51%
+⚠️  High collision risk at 9.2s: 99.47%
+⚠️  High collision risk at 9.4s: 99.40%
+⚠️  High collision risk at 9.5s: 99.56%
+⚠️  High collision risk at 9.6s: 99.40%
+⚠️  High collision risk at 9.8s: 99.57%
+⚠️  High collision risk at 9.9s: 99.52%
+⚠️  High collision risk at 10.0s: 99.64%
+
+==================================================
+🚨 COLLISION WARNING: 17 high-risk moments detected!
+First high-risk event at: 8.0 seconds
+Peak collision probability: 99.64% at 10.0s
+
+Statistics:
+  Average risk: 37.10%
+  Maximum risk: 99.64%
+  Valid predictions: 65/81
+
+==================================================
+⏱️  TIMING SUMMARY
+==================================================
+
+Model Loading:         11505.8ms  ( 54.1%)
+Inference:              9763.8ms  ( 45.9%)
+--------------------------------------------------
+TOTAL:                 21269.6ms  (100.0%)
+
+Throughput Metrics:
+  Video duration:       10.1s
+  Processing time:      9.8s
+  Real-time factor:     1.04×
+  Frames processed:     65
+  Time per frame:       150.2ms

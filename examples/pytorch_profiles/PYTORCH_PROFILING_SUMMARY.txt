@@ -1,0 +1,110 @@
+BADAS PyTorch Profiling Summary
+================================
+
+Test Video: test-private/positive/00001.mp4 (10.1 seconds)
+Device: CUDA (GPU 4)
+Total Inference Time: ~9.8 seconds
+
+GPU Time Breakdown by Operation Category:
+==========================================
+
+1. Linear/GEMM Operations:  4,041.8ms (47.6%)
+   - aten::addmm:            1,948.6ms (23.0%)
+   - CUDA GEMM kernels:      1,828.5ms (21.5%)
+   - Other linear ops:         264.7ms (3.1%)
+
+2. Attention Operations:    2,912.7ms (34.3%)
+   - Efficient Attention:    1,433.6ms (16.9%)
+   - fmha_cutlass kernels:   1,433.6ms (16.9%)
+   - BMM operations:            45.4ms (0.5%)
+
+3. Other Operations:        1,009.0ms (11.9%)
+   - aten::mul:                156.2ms (1.8%)
+   - aten::cat:                116.2ms (1.4%)
+   - Various kernels:          736.6ms (8.7%)
+
+4. Memory Operations:         289.5ms (3.4%)
+   - aten::copy_:              117.3ms (1.4%)
+   - Copy kernels:             120.7ms (1.4%)
+   - Cat kernels:               47.6ms (0.6%)
+
+5. Activation Functions:       89.6ms (1.1%)
+   - aten::gelu:                30.9ms (0.4%)
+   - aten::softmax:             13.8ms (0.2%)
+   - Other activations:         44.9ms (0.5%)
+
+6. Normalization:              86.7ms (1.0%)
+   - Layer norm:                43.3ms (0.5%)
+   - Layer norm kernels:        43.3ms (0.5%)
+
+7. Convolution:                58.3ms (0.7%)
+   - cudnn_convolution:         58.3ms (0.7%)
+
+TOTAL GPU Time:              8,487.5ms (100.0%)
+
+Key Insights:
+=============
+
+1. GEMM operations (matrix multiplications) dominate at 47.6%
+   - These are from the 24 transformer layers' MLP operations
+   - Each layer: 1024 → 4096 → 1024 projections
+
+2. Attention is second at 34.3%
+   - Already using efficient attention (CUTLASS kernels)
+   - 24 transformer layers with 16-head attention each
+
+3. Combined (GEMM + Attention) = 81.9% of GPU time
+   - This is the core transformer computation
+   - Main targets for optimization
+
+4. Memory operations are minimal (3.4%)
+   - Good GPU utilization
+   - Not memory-bandwidth bound
+
+5. Already optimized:
+   - Using efficient attention (fmha_cutlass)
+   - Using cuDNN for convolutions
+   - Minimal memory transfer overhead
+
+Optimization Opportunities:
+===========================
+
+1. FP16/BF16 Inference:
+   - Expected 2-3× speedup on GEMM operations
+   - Would reduce 8.5s → 3-4s
+
+2. Flash Attention 2:
+   - Further optimize attention (currently 2.9s)
+   - Could save 1-2s
+
+3. Operator Fusion:
+   - Fuse LayerNorm + GELU
+   - Fuse Linear projections in attention
+   - Could save 0.5-1s
+
+4. TorchScript/ONNX:
+   - Automatic kernel fusion
+   - 20-30% overall speedup
+
+5. Dynamic Quantization:
+   - INT8 for linear layers
+   - 1.5-2× speedup with minimal accuracy loss
+
+Inference Results (Same as non-profiled):
+==========================================
+- 17 high-risk collision moments detected
+- Peak collision probability: 99.64% at 10.0s
+- Average risk: 37.10%
+- Valid predictions: 65/81 frames
+
+Files Generated:
+================
+- output_pytorch_profiled.txt: Full text output
+- inference_trace.json: Chrome trace (view at chrome://tracing)
+
+Next Steps:
+===========
+1. View inference_trace.json in Chrome for visual timeline
+2. Implement FP16 inference for quick 2-3× speedup
+3. Profile with different batch sizes
+4. Test Flash Attention 2 integration

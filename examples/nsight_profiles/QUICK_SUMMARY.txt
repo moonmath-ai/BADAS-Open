@@ -1,0 +1,89 @@
+═══════════════════════════════════════════════════════════════
+   BADAS INFERENCE - COMPLETE PROFILING ANALYSIS SUMMARY
+═══════════════════════════════════════════════════════════════
+
+✅ PROFILING COMPLETED SUCCESSFULLY (Feb 3, 2026)
+
+Generated Files:
+├── 📊 COMPLETE_PROFILING_ANALYSIS.md (23 KB) - Main report
+├── 📖 README.md - Navigation guide
+├── 🔬 badas_nsys_profile.nsys-rep (41 MB) - System timeline
+├── 🔬 badas_ncu_profile.ncu-rep (44 MB) - Kernel details
+└── 💾 badas_nsys_profile.sqlite (535 MB) - Raw database
+
+═══════════════════════════════════════════════════════════════
+📈 CURRENT PERFORMANCE
+═══════════════════════════════════════════════════════════════
+
+Total Inference Time:     9.8 seconds
+├─ Video Decode (CPU):    4.8s (49%)
+├─ GPU Computation:       4.2s (43%)
+└─ Memory Transfers:      0.6s ( 6%)
+
+Real-time Factor:         1.04× (barely faster than real-time)
+Throughput:               0.10 videos/sec
+
+═══════════════════════════════════════════════════════════════
+🎯 MAIN BOTTLENECKS
+═══════════════════════════════════════════════════════════════
+
+GPU Compute Breakdown (4.2s total):
+
+1. GEMM Operations:       1,825ms (43.7%)  ⚠️  FP32 → Optimize to FP16
+   └─ MLP layers: 1024→4096→1024 × 24 layers × 66 windows
+   
+2. Attention:             1,438ms (34.4%)  ✓  Already efficient (CUTLASS)
+   └─ Multi-head self-attention × 24 layers × 66 windows
+   
+3. Element-wise ops:        360ms ( 8.6%)  →  Fusion opportunity
+4. Layer Normalization:      43ms ( 1.0%)
+5. Convolution:              53ms ( 1.3%)
+6. Other:                   457ms (10.9%)
+
+═══════════════════════════════════════════════════════════════
+🚀 OPTIMIZATION ROADMAP
+═══════════════════════════════════════════════════════════════
+
+Phase 1: Quick Wins (1 week)
+├─ FP16 Inference:        2-3× GPU speedup
+├─ GPU Video Decoding:    4× decode speedup
+└─ RESULT:                9.8s → 3.2s  (3.1× faster) ✓
+
+Phase 2: Advanced (2-3 weeks)
+├─ TorchScript/TensorRT:  1.2-1.5× speedup
+├─ Flash Attention 2:     1.3× attention speedup
+└─ RESULT:                9.8s → 2.2s  (4.5× faster) ✓
+
+Phase 3: Ultimate (with retraining)
+├─ INT8 Quantization:     1.5-2× speedup
+├─ Model Distillation:    2-4× speedup
+└─ RESULT:                9.8s → 1.0-1.5s  (6-10× faster) ✓
+
+═══════════════════════════════════════════════════════════════
+📝 NEXT STEPS
+═══════════════════════════════════════════════════════════════
+
+1. Read the full report:
+   cat COMPLETE_PROFILING_ANALYSIS.md
+
+2. Implement FP16 inference (1 day):
+   # Add to basic_inference.py:
+   model = BADASModel(...).half()
+
+3. Profile FP16 version:
+   bash ../profile_nsight_quick.sh test_video.mp4
+
+4. View detailed timeline:
+   nsys-ui badas_nsys_profile.nsys-rep
+
+═══════════════════════════════════════════════════════════════
+🎓 KEY INSIGHTS
+═══════════════════════════════════════════════════════════════
+
+✓ Model is compute-bound (GEMM dominates)
+✓ Already using efficient attention (CUTLASS)
+✓ FP16 is the biggest win (2-3× speedup for free)
+✓ CPU video decode is major overhead (49% of time)
+✓ 6-10× total speedup is achievable
+
+═══════════════════════════════════════════════════════════════
